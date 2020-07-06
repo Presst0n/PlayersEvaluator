@@ -28,9 +28,8 @@ namespace PE.API.Services
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public List<Roster> GetRosters(List<UserRosterAccess> rosterAccessModels, PaginationFilter paginationFilter = null)
+        public List<Roster> GetRosters(List<string> rosterIds, PaginationFilter paginationFilter = null)
         {
-            var rosterIds = rosterAccessModels.Select(x => x.RosterId).ToList();
             var queryable = _context.RostersDto.AsQueryable();
 
             if (paginationFilter is null)

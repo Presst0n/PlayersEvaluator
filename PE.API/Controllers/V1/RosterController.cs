@@ -24,32 +24,33 @@ namespace PE.API.Controllers.V1
         private readonly IMapper _mapper;
         private readonly IUriService _uriService;
         private readonly IRosterAccessService _rosterAccessService;
-        private readonly IRaiderService _raiderService;
         private readonly ILoggerManager _logger;
+        private readonly IResourceAuthorizationService _resourceAuthorizationService;
 
         public RosterController(IRosterService rosterService, IMapper mapper, IUriService uriService, IRosterAccessService rosterAccessService,
-            IRaiderService raiderService, ILoggerManager logger)
+            ILoggerManager logger, IResourceAuthorizationService resourceAuthorizationService)
         {
             _rosterService = rosterService;
             _mapper = mapper;
             _uriService = uriService;
             _rosterAccessService = rosterAccessService;
-            _raiderService = raiderService;
             _logger = logger;
+            _resourceAuthorizationService = resourceAuthorizationService;
         }
 
         [HttpGet(ApiRoutes.Rosters.Get)]
         public async Task<IActionResult> Get([FromRoute] string rosterId)
         {
-            var rosterAccess = _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), rosterId);
-
-            if (rosterAccess is null)
-                return CreateErrorResponse(Status.Forbidden);
-
             var roster = await _rosterService.GetRosterByIdAsync(rosterId);
 
             if (roster == null)
                 return NotFound();
+
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), roster);
+
+            if (!result.ReadOnlyAccess)
+                return CreateErrorResponse(Status.Forbidden);
+
             //_logger.LogInfo("Getting all rosters.");
             return Ok(new Response<RosterResponse>(_mapper.Map<RosterResponse>(roster)));
         }
@@ -60,8 +61,8 @@ namespace PE.API.Controllers.V1
             var pagination = _mapper.Map<PaginationFilter>(paginationQuery);
 
             var loggedUserId = HttpContext.GetUserId();
-            var rosterAccessModel = await _rosterAccessService.GetRosterAccessesByUserIdAsync(loggedUserId);
-            var rosters = _rosterService.GetRosters(rosterAccessModel, pagination);
+            var userRosterIds = await _resourceAuthorizationService.GetAuthorizedRosterIds(loggedUserId);
+            var rosters = _rosterService.GetRosters(userRosterIds, pagination);
             var rostersResponse = _mapper.Map<List<RosterResponse>>(rosters);
 
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
@@ -113,23 +114,23 @@ namespace PE.API.Controllers.V1
             if (request == null)
                 return ValidationProblem();
 
-            var rosterAccessModel = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), rosterId);
-
-            if (rosterAccessModel == null)
-                return CreateErrorResponse(Status.Forbidden);
-
-            if (!rosterAccessModel.IsOwner)
-            {
-                if (!rosterAccessModel.IsModerator)
-                {
-                    return CreateErrorResponse(Status.Forbidden);
-                }
-            }
-
             var roster = await _rosterService.GetRosterByIdAsync(rosterId);
 
             if (roster is null)
                 return NotFound();
+
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), roster);
+
+            if (!result.ReadOnlyAccess)
+                return CreateErrorResponse(Status.Forbidden);
+
+            if (!result.IsOwner)
+            {
+                if (!result.IsModerator)
+                {
+                    return CreateErrorResponse(Status.Forbidden);
+                }
+            }
 
             roster.Name = request.Name;
             roster.Description = request.Description;
@@ -142,22 +143,19 @@ namespace PE.API.Controllers.V1
         [HttpDelete(ApiRoutes.Rosters.Delete)]
         public async Task<IActionResult> Delete([FromRoute] string rosterId)
         {
-            var rosterAccessModel = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), rosterId);
             var roster = await _rosterService.GetRosterByIdAsync(rosterId);
-            
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), roster);
+
             if (roster is null)
                 return NotFound();
 
-            if (rosterAccessModel is null)
-                return CreateErrorResponse(Status.Forbidden);
-
-            if (!rosterAccessModel.IsOwner)
+            if (!result.IsOwner)
             {
                 return CreateErrorResponse(Status.Forbidden);
             }
 
             await _rosterService.DeleteRosterAsync(roster);
-            await _rosterAccessService.DeleteRosterAccessesAsync(rosterAccessModel.RosterId);
+            await _rosterAccessService.DeleteRosterAccessesAsync(roster.Id);
 
             return NoContent();
         }

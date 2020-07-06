@@ -9,7 +9,7 @@ namespace PE.API.Services
     {
         Task<bool> CreateRosterAsync(Roster roster);
         Task<Roster> GetRosterByIdAsync(string rosterId);
-        List<Roster> GetRosters(List<UserRosterAccess> rosterAccessModels, PaginationFilter paginationFilter = null);
+        List<Roster> GetRosters(List<string> rosterIds, PaginationFilter paginationFilter = null);
         Task<bool> UpdateRosterAsync(Roster rosterToUpdate);
         Task<bool> DeleteRosterAsync(string rosterId);
         Task<bool> DeleteRosterAsync(Roster roster);

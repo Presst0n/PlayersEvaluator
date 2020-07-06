@@ -20,16 +20,19 @@ namespace PE.API.Controllers.V1
     public class RaiderController : Controller
     {
         private readonly IRaiderService _raiderSerivce;
+        private readonly IRosterService _rosterService;
         private readonly IUriService _uriService;
         private readonly IMapper _mapper;
-        private readonly IRosterAccessService _rosterAccessService;
+        private readonly IResourceAuthorizationService _resourceAuthorizationService;
 
-        public RaiderController(IRaiderService raiderSerivce, IUriService uriService, IMapper mapper, IRosterAccessService rosterAccessService)
+        public RaiderController(IRaiderService raiderSerivce, IUriService uriService, IMapper mapper,
+            IResourceAuthorizationService resourceAuthorizationService, IRosterService rosterService)
         {
             _raiderSerivce = raiderSerivce;
             _uriService = uriService;
             _mapper = mapper;
-            _rosterAccessService = rosterAccessService;
+            _resourceAuthorizationService = resourceAuthorizationService;
+            _rosterService = rosterService;
         }
 
         [HttpGet(ApiRoutes.Raiders.Get)]
@@ -40,9 +43,9 @@ namespace PE.API.Controllers.V1
             if (raider is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, HttpContext.GetUserId(), raiderId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), raider);
 
-            if (rosterAccess == null)
+            if (!result.ReadOnlyAccess)
                 return CreateErrorResponse(Status.Forbidden);
 
             return Ok(new Response<RaiderResponse>(_mapper.Map<RaiderResponse>(raider)));
@@ -53,18 +56,10 @@ namespace PE.API.Controllers.V1
         {
             var pagination = _mapper.Map<PaginationFilter>(paginationQuery);
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), rosterId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), rosterId);
 
-            if (rosterAccess == null)
+            if (!result.ReadOnlyAccess)
                 return CreateErrorResponse(Status.Forbidden);
-
-            //if (!rosterAccess.IsOwner)
-            //{
-            //    if (!rosterAccess.IsModerator)
-            //    {
-            //        return CreateErrorResponse(Status.Forbidden);
-            //    }
-            //}
 
             var raiders = await _raiderSerivce.GetRaidersFromRosterAsync(rosterId, pagination);
 
@@ -86,16 +81,16 @@ namespace PE.API.Controllers.V1
         [HttpPost(ApiRoutes.Raiders.Create)]
         public async Task<IActionResult> Create([FromBody] CreateRaiderRequest raiderRequest)
         {
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), raiderRequest?.RosterId);
+            var roster = await _rosterService.GetRosterByIdAsync(raiderRequest.RosterId);
 
-            if (rosterAccess is null)
-            {
-                return CreateErrorResponse(Status.Forbidden);
-            }
+            if (roster is null)
+                return BadRequest("Cannot add raider while given roster does not exist.");
 
-            if (!rosterAccess.IsOwner)
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), roster);
+
+            if (!result.IsOwner)
             {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return CreateErrorResponse(Status.Forbidden);
                 }
@@ -129,16 +124,11 @@ namespace PE.API.Controllers.V1
             if (raider is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), raider.RosterId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), raider);
 
-            if (rosterAccess is null)
+            if (!result.IsOwner)
             {
-                return CreateErrorResponse(Status.Forbidden);
-            }
-
-            if (!rosterAccess.IsOwner)
-            {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return CreateErrorResponse(Status.Forbidden);
                 }
@@ -164,16 +154,11 @@ namespace PE.API.Controllers.V1
             if (raider is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, HttpContext.GetUserId(), raider.RosterId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), raider);
 
-            if (rosterAccess is null)
+            if (!result.IsOwner)
             {
-                return CreateErrorResponse(Status.Forbidden);
-            }
-
-            if (!rosterAccess.IsOwner)
-            {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return CreateErrorResponse(Status.Forbidden);
                 }

@@ -26,6 +26,7 @@ namespace PE.API.Installers
             services.AddScoped<IRosterAccessService, RosterAccessService>();
             services.AddScoped<IRaiderService, RaiderService>();
             services.AddScoped<IRaiderNoteService, RaiderNoteService>();
+            services.AddScoped<IResourceAuthorizationService, ResourceAuthorizationService>();
             services.AddScoped<IIdentityRepository, IdentityRepository>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }

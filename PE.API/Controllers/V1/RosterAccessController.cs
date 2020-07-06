@@ -32,14 +32,14 @@ namespace PE.API.Controllers.V1
         }
 
         [HttpGet(ApiRoutes.RosterAccesses.GetAll)]
-        public async Task<IActionResult> GetAll([FromQuery] GetAllRosterAccessesRequest request, [FromQuery] PaginationQuery paginationQuery)
+        public async Task<IActionResult> GetAll([FromQuery] string rosterId, [FromQuery] PaginationQuery paginationQuery)
         {
             var pagination = _mapper.Map<PaginationFilter>(paginationQuery);
             var loggedUserId = HttpContext.GetUserId();
-            var callerAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, loggedUserId, request.RosterId);
+            var callerAccess = await _rosterAccessService.GetRosterAccessAsync(loggedUserId, rosterId);
 
             if (callerAccess is null)
-                return CreateErrorResponse(Status.BadRequest);
+                return CreateErrorResponse(Status.Forbidden);
 
             if (!callerAccess.IsOwner)
             {
@@ -47,7 +47,7 @@ namespace PE.API.Controllers.V1
                     return CreateErrorResponse(Status.BadRequest);
             }
 
-            var accessModels = await _rosterAccessService.GetRosterAccessesByRosterIdAsync(request.RosterId, pagination);
+            var accessModels = await _rosterAccessService.GetRosterAccessesByRosterIdAsync(rosterId, pagination);
 
             var rostersAccessResponse = _mapper.Map<List<RosterAccessResponse>>(accessModels);
 
@@ -66,7 +66,7 @@ namespace PE.API.Controllers.V1
         {
             var loggedUserId = HttpContext.GetUserId();
 
-            var access = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, loggedUserId, request.RosterId);
+            var access = await _rosterAccessService.GetRosterAccessAsync(loggedUserId, request.RosterId);
 
             if (access is null)
                 return CreateErrorResponse(Status.Forbidden);
@@ -100,7 +100,7 @@ namespace PE.API.Controllers.V1
             if (rosterAccessToUpdate is null)
                 return NotFound();
 
-            var callersRosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, loggedUserId, rosterAccessToUpdate.RosterId);
+            var callersRosterAccess = await _rosterAccessService.GetRosterAccessAsync(loggedUserId, rosterAccessToUpdate.RosterId);
 
             if (callersRosterAccess is null)
                 return CreateErrorResponse(Status.Forbidden);
@@ -144,7 +144,7 @@ namespace PE.API.Controllers.V1
             if (rosterAccessToDelete is null)
                 return NotFound();
 
-            var callersRosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RosterId, loggedUserId, rosterAccessToDelete.RosterId);
+            var callersRosterAccess = await _rosterAccessService.GetRosterAccessAsync(loggedUserId, rosterAccessToDelete.RosterId);
 
             if (callersRosterAccess is null)
                 return CreateErrorResponse(Status.Forbidden);

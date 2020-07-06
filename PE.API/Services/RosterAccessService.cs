@@ -34,62 +34,15 @@ namespace PE.API.Services
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<UserRosterAccess>> GetRosterAccessesByUserIdAsync(string userId)
+        public async Task<UserRosterAccess> GetRosterAccessAsync(string userId, string rosterId)
         {
-            var rosterAccesses = _context.UserRosterAccessesDto.AsQueryable();
+            if (string.IsNullOrEmpty(rosterId))
+                return null;
 
-            return _mapper.Map<List<UserRosterAccess>>(await rosterAccesses.Where(x => x.UserId == userId).ToListAsync());
+            var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
+
+            return _mapper.Map<UserRosterAccess>(rosterAccess);
         }
-
-        public async Task<UserRosterAccess> GetRosterAccessAsync(GetBy getBy, string userId, string id)
-        {
-            return getBy switch
-            {
-                GetBy.RosterId => await GetByRosterIdAsync(userId, id),
-                GetBy.RaiderId => await GetByRaiderIdAsync(userId, id),
-                _ => null,
-            };
-        }
-
-        //public async Task<UserRosterAccess> GetRosterAccessAsync(string userId, string rosterId)
-        //{
-        //    if (string.IsNullOrEmpty(rosterId))
-        //        return null;
-
-        //    var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
-
-        //    return _mapper.Map<UserRosterAccess>(rosterAccess);
-        //}
-
-        //public async Task<UserRosterAccess> GetRosterAccessByRaiderIdAsync(string userId, string raiderId)
-        //{
-        //    if (string.IsNullOrEmpty(raiderId))
-        //        return null;
-
-        //    var rosterId = _context.RaidersDto.AsQueryable().Where(r => r.RaiderId == raiderId).Select(x => x.RosterId).FirstOrDefault();
-
-        //    if (string.IsNullOrEmpty(rosterId))
-        //        return null;
-
-        //    var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
-
-        //    return _mapper.Map<UserRosterAccess>(rosterAccess);
-        //}
-
-        //public async Task<UserRosterAccess> GetRosterAccessAsync(string userId, RaiderNote raiderNote)
-        //{
-        //    if (raiderNote is null)
-        //        return null;
-
-        //    var rosterId = _context.RaidersDto.AsQueryable().Where(x => x.RaiderId == raiderNote.RaiderId).Select(r => r.RosterId).FirstOrDefault();
-
-        //    if (string.IsNullOrEmpty(rosterId))
-        //        return null;
-
-        //    var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
-
-        //    return _mapper.Map<UserRosterAccess>(rosterAccess);
-        //}
 
         public async Task<List<UserRosterAccess>> GetRosterAccessesByRosterIdAsync(string rosterId, PaginationFilter pagination = null)
         {
@@ -152,32 +105,6 @@ namespace PE.API.Services
         {
             _context.UserRosterAccessesDto.Update(_mapper.Map<UserRosterAccessDto>(rosterAccessToUpdate));
             return await _context.SaveChangesAsync() > 0;
-        }
-
-        private async Task<UserRosterAccess> GetByRosterIdAsync(string userId, string rosterId)
-        {
-            if (string.IsNullOrEmpty(rosterId))
-                return null;
-
-            var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
-
-            return _mapper.Map<UserRosterAccess>(rosterAccess);
-        }
-
-
-        private async Task<UserRosterAccess> GetByRaiderIdAsync(string userId, string raiderId)
-        {
-            if (string.IsNullOrEmpty(raiderId))
-                return null;
-
-            var rosterId = _context.RaidersDto.AsQueryable().Where(r => r.RaiderId == raiderId).Select(x => x.RosterId).FirstOrDefault();
-
-            if (string.IsNullOrEmpty(rosterId))
-                return null;
-
-            var rosterAccess = await _context.UserRosterAccessesDto.AsNoTracking().SingleOrDefaultAsync(x => x.UserId == userId && x.RosterId == rosterId);
-
-            return _mapper.Map<UserRosterAccess>(rosterAccess);
         }
     }
 }

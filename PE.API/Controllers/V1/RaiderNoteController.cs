@@ -23,16 +23,15 @@ namespace PE.API.Controllers.V1
         private readonly IMapper _mapper;
         private readonly IUriService _uriService;
         private readonly IRaiderNoteService _raiderNoteService;
-        private readonly IRosterAccessService _rosterAccessService;
         private readonly IRaiderService _raiderService;
+        private readonly IResourceAuthorizationService _resourceAuthorizationService;
 
         public RaiderNoteController(IMapper mapper, IUriService uriService, IRaiderNoteService raiderNoteService,
-            IRosterAccessService rosterAccessService, IRaiderService raiderService)
+            IRaiderService raiderService)
         {
             _mapper = mapper;
             _uriService = uriService;
             _raiderNoteService = raiderNoteService;
-            _rosterAccessService = rosterAccessService;
             _raiderService = raiderService;
         }
 
@@ -46,9 +45,9 @@ namespace PE.API.Controllers.V1
             if (raiderNote is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, loggedInUserId, raiderNote.RaiderId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(loggedInUserId, raiderNote);
 
-            if (rosterAccess is null)
+            if (!result.ReadOnlyAccess)
                 return Forbid();
 
             return Ok(new Response<RaiderNoteResponse>(_mapper.Map<RaiderNoteResponse>(raiderNote)));
@@ -58,16 +57,16 @@ namespace PE.API.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] string raiderId, [FromQuery] PaginationQuery paginationQuery)
         {
             var pagination = _mapper.Map<PaginationFilter>(paginationQuery);
-            //var raider = await _raiderService.GetRaiderByIdAsync(raiderId);
+            var raider = await _raiderService.GetRaiderByIdAsync(raiderId);
 
-            //if (raider is null)
-            //    return BadRequest("RaiderId is incorrect or raider with given id does not exists.");
+            if (raider is null)
+                return BadRequest("RaiderId is incorrect or raider with given id does not exists.");
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, HttpContext.GetUserId(), raiderId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(HttpContext.GetUserId(), raider);
 
-            if (rosterAccess is null)
+            if (!result.ReadOnlyAccess)
             {
-                return NotFound();
+                return Forbid();
             }
 
             var raiderNotes = await _raiderNoteService.GetRaiderNotesByRaiderIdAsync(raiderId, pagination);
@@ -87,21 +86,17 @@ namespace PE.API.Controllers.V1
         [HttpPost(ApiRoutes.RaiderNotes.Create)]
         public async Task<IActionResult> Create([FromBody] CreateRaiderNoteRequest raiderNoteRequest)
         {
-            //var raider = await _raiderService.GetRaiderByIdAsync(raiderNoteRequest.RaiderId);
+            var raider = await _raiderService.GetRaiderByIdAsync(raiderNoteRequest.RaiderId);
 
-            //if (raider is null)
-            //    return BadRequest("Cannot create note for raider, because it does not exists.");
+            if (raider is null)
+                return BadRequest("Cannot create note for raider, because it does not exists.");
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, HttpContext.GetUserId(), raiderNoteRequest.RaiderId);
+            var userId = HttpContext.GetUserId();
+            var result = await _resourceAuthorizationService.AuthorizeAsync(userId, raider);
 
-            if (rosterAccess is null)
+            if (!result.IsOwner)
             {
-                return Forbid();
-            }
-
-            if (!rosterAccess.IsOwner)
-            {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return Forbid();
                 }
@@ -114,7 +109,7 @@ namespace PE.API.Controllers.V1
                 RaiderId = raiderNoteRequest.RaiderId,
                 RaiderNoteId = raiderNoteId,
                 Message = raiderNoteRequest.Message,
-                CreatorId = rosterAccess.UserId
+                CreatorId = userId
             };
 
             await _raiderNoteService.CreateRaiderNoteAsync(raiderNote);
@@ -134,11 +129,11 @@ namespace PE.API.Controllers.V1
             if (raiderNote is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, loggedInUser, raiderNote.RaiderId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(loggedInUser, raiderNote);
 
-            if (!rosterAccess.IsOwner)
+            if (!result.IsOwner)
             {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return Forbid();
                 }
@@ -161,17 +156,14 @@ namespace PE.API.Controllers.V1
             if (raiderNote is null)
                 return NotFound();
 
-            var rosterAccess = await _rosterAccessService.GetRosterAccessAsync(GetBy.RaiderId, loggedInUser, raiderNote.RaiderId);
+            var result = await _resourceAuthorizationService.AuthorizeAsync(loggedInUser, raiderNote);
 
-            if (rosterAccess is null)
-                return Forbid();
-
-            if (!rosterAccess.IsOwner)
+            if (!result.IsOwner)
             {
-                if (!rosterAccess.IsModerator)
+                if (!result.IsModerator)
                 {
                     return Forbid();
-                } 
+                }
             }
 
             await _raiderNoteService.DeleteRaiderNoteAsync(raiderNote);
