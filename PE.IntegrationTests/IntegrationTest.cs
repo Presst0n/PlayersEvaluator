@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using PE.API;
 using PE.API.Data;
 using PE.Contracts.V1;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PE.IntegrationTests
@@ -51,6 +53,14 @@ namespace PE.IntegrationTests
             TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
         }
 
+        protected async Task ReAuthenticateAsync()
+        {
+            TestClient.DefaultRequestHeaders.Connection.Clear();
+            TestClient.DefaultRequestHeaders.Clear();
+
+            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAnotherJwtAsync());
+        }
+
         protected async Task<RosterResponse> CreateRosterAsync(CreateRosterRequest request)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Rosters.Create, request);
@@ -65,6 +75,12 @@ namespace PE.IntegrationTests
             }
         }
 
+        protected HttpContent GetContentAsync<T>(T data) where T : class
+        {
+            HttpContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            return content;
+        } 
+
         private async Task<string> GetJwtAsync()
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, new UserRegistrationRequest
@@ -72,6 +88,19 @@ namespace PE.IntegrationTests
                 Email = "ttt@ttt.com",
                 Password = "TestPassword255.",
                 UserName = "JohnnyTest"
+            });
+
+            var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();
+            return registrationResponse.Token;
+        }
+
+        private async Task<string> GetAnotherJwtAsync()
+        {
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, new UserRegistrationRequest
+            {
+                Email = "pipi@ttt.com",
+                Password = "TestPassword255.",
+                UserName = "TestJohnny"
             });
 
             var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();
