@@ -41,7 +41,7 @@
 
         public static class RosterAccesses
         {
-            public const string Get = Base + "/rosterAccesses/rosterAccess";
+            public const string Get = Base + "/rosterAccesses/{rosterAccessId}";
             public const string GetAll = Base + "/rosterAccesses";
             public const string Create = Base + "/rosterAccesses";
             public const string Update = Base + "/rosterAccesses/{rosterAccessId}";

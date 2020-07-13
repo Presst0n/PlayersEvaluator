@@ -16,7 +16,7 @@ using Xunit;
 
 namespace PE.IntegrationTests
 {
-    public class RosterControllerTest : IntegrationTest
+    public class RosterControllerTests : RosterIntegrationTest
     {
         [Fact]
         public async Task GetAll_WithoutAnyRosters_ReturnsEmptyResponse()
@@ -34,7 +34,7 @@ namespace PE.IntegrationTests
         }
 
         [Fact]
-        public async Task GetAll_WithRosters_ReturnsPopulatedCollectionOfRosters()
+        public async Task GetAll_IfUserHasAccessToRosters_ReturnsPopulatedCollectionOfRosters()
         {
             // Arrange 
             await AuthenticateAsync();
@@ -81,7 +81,7 @@ namespace PE.IntegrationTests
             var createdRoster = await CreateRosterAsync(new CreateRosterRequest { CreatorName = "Test roster", Description = "Test description" });
 
             // Act
-            var response = await TestClient.GetAsync(ApiRoutes.Rosters.Get.Replace("{rosterId}", createdRoster.Id.ToString()));
+            var response = await TestClient.GetAsync(ApiRoutes.Rosters.Get.Replace("{rosterId}", createdRoster.Id));
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -105,7 +105,7 @@ namespace PE.IntegrationTests
             var rosterToUpdate = await response.Content.ReadAsAsync<RosterResponse>();
             rosterToUpdate.Name = "Unfortunately test do not go brrrrr";
             rosterToUpdate.Description = "Life hurts";
-            var content = GetContentAsync(rosterToUpdate);
+            var content = CreateHttpContent(rosterToUpdate);
 
             // Act
             var response_ = await TestClient.PutAsync(ApiRoutes.Rosters.Update.Replace("{rosterId}", createRosterResponse.Id), content);
@@ -127,7 +127,7 @@ namespace PE.IntegrationTests
             var fakeRoster = new RosterResponse { Id = id, Name = "TestName", CreatorName = "Luci", CreatorId = id, Description = ":/" };
             fakeRoster.Name = "Unfortunately test do not go brrrrr :/";
             fakeRoster.Description = "Life hurts";
-            var content = GetContentAsync(fakeRoster);
+            var content = CreateHttpContent(fakeRoster);
 
             // Act
             var response_ = await TestClient.PutAsync(ApiRoutes.Rosters.Update.Replace("{rosterId}", fakeRoster.Id), content);
@@ -151,8 +151,8 @@ namespace PE.IntegrationTests
             var rosterToUpdate = await response.Content.ReadAsAsync<RosterResponse>();
             rosterToUpdate.Name = "Unfortunately test do not go brrrrr";
             rosterToUpdate.Description = "Life hurts";
-            var content = GetContentAsync(rosterToUpdate);
-            await ReAuthenticateAsync();
+            var content = CreateHttpContent(rosterToUpdate);
+            await AuthenticateAsync("test@test", "Byczek");
 
             // Act
             var response_ = await TestClient.PutAsync(ApiRoutes.Rosters.Update.Replace("{rosterId}", createRosterResponse.Id), content);
@@ -166,7 +166,11 @@ namespace PE.IntegrationTests
         {
             // Arrange
             await AuthenticateAsync();
-            var createRosterResponse = await CreateRosterAsync(new CreateRosterRequest { CreatorName = "Haha test post go brrrrrr!", Description = "Test description" });
+            var createRosterResponse = await CreateRosterAsync(new CreateRosterRequest 
+            { 
+                CreatorName = "Haha test post go brrrrrr!", 
+                Description = "Test description" 
+            });
 
             // Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Rosters.Delete.Replace("{rosterId}", createRosterResponse.Id.ToString()));
@@ -190,22 +194,41 @@ namespace PE.IntegrationTests
         }
 
         [Fact]
-        public async Task Delete_DisplayForbbidenStatusCode_IfUserHaveInsufficientPermissions()
+        public async Task Delete_DisplayForbbidenStatusCode_IfUserHasInsufficientPermissions()
         {
             // Arrange
             await AuthenticateAsync();
             var createdRoster = await CreateRosterAsync(new CreateRosterRequest 
             { 
                 Name = "Awesome Roster", 
-                Description = "That's mine best roster I've ever done in my whole fuckin' life." 
+                Description = "That's my best roster I've ever done in my whole fuckin' life." 
             });
-            await ReAuthenticateAsync();
+            await AuthenticateAsync("test@test", "Byczek");
 
             // Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Rosters.Delete.Replace("{rosterId}", createdRoster.Id));
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Create_CreatesRosterAndAddsToDatabase()
+        {    
+            // Arrange
+            await AuthenticateAsync();
+
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Rosters.Create, new CreateRosterRequest
+            {
+                Name = "Even more awesome Roster",
+                Description = "That's my best roster I've ever done in my whole fuckin' life."
+            });
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var roster = await response.Content.ReadAsAsync<RosterResponse>();
+            roster.Should().NotBeNull();
         }
     }
 }

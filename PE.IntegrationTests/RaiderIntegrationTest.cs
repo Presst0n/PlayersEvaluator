@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 
 namespace PE.IntegrationTests
 {
-    public class IntegrationTest : IDisposable
+    public class RaiderIntegrationTest : IDisposable
     {
         protected readonly HttpClient TestClient;
         private readonly IServiceProvider _serviceProvider;
 
-        protected IntegrationTest()
+        protected RaiderIntegrationTest()
         {
             var appFactory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
@@ -40,7 +40,7 @@ namespace PE.IntegrationTests
 
                         services.AddDbContext<DataContext>(options =>
                         {
-                            options.UseInMemoryDatabase("MyTestDB");
+                            options.UseInMemoryDatabase("MyTestDBRaider");
                         });
                     });
                 });
@@ -48,17 +48,15 @@ namespace PE.IntegrationTests
             TestClient = appFactory.CreateClient();
         }
 
-        protected async Task AuthenticateAsync()
+        protected async Task AuthenticateAsync(string email = null, string name = null)
         {
-            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync(email, name));
         }
 
-        protected async Task ReAuthenticateAsync()
+        protected void ClearConnection()
         {
             TestClient.DefaultRequestHeaders.Connection.Clear();
             TestClient.DefaultRequestHeaders.Clear();
-
-            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetAnotherJwtAsync());
         }
 
         protected async Task<RosterResponse> CreateRosterAsync(CreateRosterRequest request)
@@ -67,40 +65,41 @@ namespace PE.IntegrationTests
             return await response.Content.ReadAsAsync<RosterResponse>();
         }
 
-        protected async Task CreateRostersAsync(List<CreateRosterRequest> request)
+        protected async Task<RaiderResponse> CreateRaiderAsync(CreateRaiderRequest request)
+        {
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Raiders.Create, request);
+            return await response.Content.ReadAsAsync<RaiderResponse>();
+        }
+
+        protected async Task CreateRaidersAsync(List<CreateRaiderRequest> request)
         {
             foreach (var item in request)
             {
-                await TestClient.PostAsJsonAsync(ApiRoutes.Rosters.Create, item);
+                await TestClient.PostAsJsonAsync(ApiRoutes.Raiders.Create, item);
             }
         }
 
-        protected HttpContent GetContentAsync<T>(T data) where T : class
+        protected HttpContent CreateHttpContent<T>(T data) where T : class
         {
-            HttpContent content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-            return content;
+            return new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
         } 
 
-        private async Task<string> GetJwtAsync()
+        protected async Task RemoveAccessAsync(RosterResponse roster)
         {
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, new UserRegistrationRequest
-            {
-                Email = "ttt@ttt.com",
-                Password = "TestPassword255.",
-                UserName = "JohnnyTest"
-            });
+            var httpResponse = await TestClient.GetAsync(ApiRoutes.RosterAccesses.GetAll + $"?rosterId={roster.Id}");
+            var pagedRosterAccesses = await httpResponse.Content.ReadAsAsync<PagedResponse<RosterAccessResponse>>();
 
-            var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();
-            return registrationResponse.Token;
+            var access = pagedRosterAccesses.Data.SingleOrDefault(x => x.CreatorId == roster.CreatorId);
+            var t = await TestClient.DeleteAsync(ApiRoutes.RosterAccesses.Delete.Replace("{rosterAccessId}", access.Id.ToString()));
         }
 
-        private async Task<string> GetAnotherJwtAsync()
+        private async Task<string> GetJwtAsync(string email = null, string name = null)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, new UserRegistrationRequest
             {
-                Email = "pipi@ttt.com",
+                Email = !string.IsNullOrEmpty(email) ? email : "ttt@ttt.com",
                 Password = "TestPassword255.",
-                UserName = "TestJohnny"
+                UserName = !string.IsNullOrEmpty(name) ? name : "JohnnyTest"
             });
 
             var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();

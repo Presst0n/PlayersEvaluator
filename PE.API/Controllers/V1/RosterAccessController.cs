@@ -61,6 +61,24 @@ namespace PE.API.Controllers.V1
             return Ok(paginationResponse);
         }
 
+        //[HttpGet(ApiRoutes.RosterAccesses.Get)]
+        //public async Task<IActionResult> Get([FromQuery] string rosterId)
+        //{
+        //    var loggedUserId = HttpContext.GetUserId();
+        //    var access = await _rosterAccessService.GetRosterAccessAsync(loggedUserId, rosterId);
+
+        //    if (access is null)
+        //        return NotFound();
+
+        //    if (!access.IsOwner)
+        //    {
+        //        if (!access.IsModerator)
+        //            return CreateErrorResponse(Status.BadRequest);
+        //    }
+
+        //    return Ok(_mapper.Map<RosterAccessResponse>(access));
+        //}
+
         [HttpPost(ApiRoutes.RosterAccesses.Create)]
         public async Task<IActionResult> Create([FromBody] CreateRosterAccessRequest request)
         {

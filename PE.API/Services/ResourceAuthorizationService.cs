@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PE.API.Data;
+using PE.API.Dtos;
 using PE.DomainModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +85,27 @@ namespace PE.API.Services
 
         private ResourceAuthorizationResult GenerateAuthorizationResult(UserRosterAccess access)
         {
-            if (access is null)
+            if (access is null || string.IsNullOrEmpty(access.UserId))
+            {
+                return new ResourceAuthorizationResult
+                {
+                    ReadOnlyAccess = false,
+                    IsModerator = false,
+                    IsOwner = false
+                };
+            }
+
+            return new ResourceAuthorizationResult
+            {
+                ReadOnlyAccess = true,
+                IsModerator = access.IsModerator,
+                IsOwner = access.IsOwner
+            };
+        }
+
+        private ResourceAuthorizationResult GenerateAuthorizationResult(UserRosterAccessDto access)
+        {
+            if (access is null || string.IsNullOrEmpty(access.UserId))
             {
                 return new ResourceAuthorizationResult
                 {

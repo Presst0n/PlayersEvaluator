@@ -51,9 +51,6 @@ namespace PE.API.Services
 
         public async Task<bool> UpdateRosterAsync(Roster rosterToUpdate)
         {
-            if (rosterToUpdate == null)
-                return false;
-
             _context.RostersDto.Update(_mapper.Map<RosterDto>(rosterToUpdate));
 
             return await _context.SaveChangesAsync() > 0;
