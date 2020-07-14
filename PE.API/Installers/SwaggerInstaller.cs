@@ -18,7 +18,7 @@ namespace PE.API.Installers
         {
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "API under development", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "API in development", Version = "v1" });
 
                 options.ExampleFilters();
 

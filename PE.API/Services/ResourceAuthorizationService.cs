@@ -62,8 +62,8 @@ namespace PE.API.Services
 
         public async Task<ResourceAuthorizationResult> AuthorizeAsync(string userId, string resourceId)
         {
-            if (string.IsNullOrEmpty(resourceId))
-                return null;
+            //if (string.IsNullOrEmpty(resourceId))
+            //    return null;
 
             if (_context.RostersDto.Any(x => x.Id == resourceId))
             {
