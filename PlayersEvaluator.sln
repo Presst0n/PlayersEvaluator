@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PE.IntegrationTests", "PE.I
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PE.Client", "PE.Client", "{94F1C84E-6A21-4EEC-B4E4-7C80C733231B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PE.WPF", "PE.WPF\PE.WPF.csproj", "{7BEFEEFB-572A-4068-8131-61DF294D8270}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PE.WPF", "PE.WPF\PE.WPF.csproj", "{7BEFEEFB-572A-4068-8131-61DF294D8270}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PE.DataManager", "PE.DataManager\PE.DataManager.csproj", "{D1D763F2-7938-4845-8870-6AB5BE08E1DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,12 +49,17 @@ Global
 		{7BEFEEFB-572A-4068-8131-61DF294D8270}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BEFEEFB-572A-4068-8131-61DF294D8270}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BEFEEFB-572A-4068-8131-61DF294D8270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D763F2-7938-4845-8870-6AB5BE08E1DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D763F2-7938-4845-8870-6AB5BE08E1DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D763F2-7938-4845-8870-6AB5BE08E1DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D763F2-7938-4845-8870-6AB5BE08E1DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7BEFEEFB-572A-4068-8131-61DF294D8270} = {94F1C84E-6A21-4EEC-B4E4-7C80C733231B}
+		{D1D763F2-7938-4845-8870-6AB5BE08E1DA} = {94F1C84E-6A21-4EEC-B4E4-7C80C733231B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD14EA25-F239-43D1-B018-73DFFB16BBE8}
