@@ -13,7 +13,6 @@ using PE.Contracts.V1;
 using PE.Contracts.V1.Requests;
 using PE.Contracts.V1.Responses;
 using PE.DomainModels;
-using PE.DomainModels.Enums;
 
 namespace PE.API.Controllers.V1
 {
@@ -27,12 +26,13 @@ namespace PE.API.Controllers.V1
         private readonly IResourceAuthorizationService _resourceAuthorizationService;
 
         public RaiderNoteController(IMapper mapper, IUriService uriService, IRaiderNoteService raiderNoteService,
-            IRaiderService raiderService)
+            IRaiderService raiderService, IResourceAuthorizationService resourceAuthorizationService)
         {
             _mapper = mapper;
             _uriService = uriService;
             _raiderNoteService = raiderNoteService;
             _raiderService = raiderService;
+            _resourceAuthorizationService = resourceAuthorizationService;
         }
 
         [HttpGet(ApiRoutes.RaiderNotes.Get)]
