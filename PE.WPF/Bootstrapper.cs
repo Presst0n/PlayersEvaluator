@@ -1,11 +1,13 @@
 ﻿using Caliburn.Micro;
 using PE.DataManager;
+using PE.WPF.Helpers;
 using PE.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PE.WPF
 {
@@ -25,6 +27,11 @@ namespace PE.WPF
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>();
+
+            ConventionManager.AddElementConvention<PasswordBox>(
+                PasswordBoxHelper.BoundPasswordProperty,
+                "Password",
+                "PasswordChanged");
 
 
             GetType().Assembly.GetTypes()
