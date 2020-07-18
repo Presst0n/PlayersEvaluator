@@ -235,7 +235,9 @@ namespace PE.API.Services
             {
                 Success = true,
                 Token = tokenHandler.WriteToken(token),
-                RefreshToken = result
+                RefreshToken = result,
+                EmailAddress = user.Email,
+                UserName = user.UserName
             };
         }
     }

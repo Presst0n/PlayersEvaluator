@@ -62,6 +62,8 @@ namespace PE.API.Controllers.V1
 
             return Ok(new AuthSuccessResponse
             {
+                UserName = authResponse.UserName,
+                Email = authResponse.EmailAddress,
                 Token = authResponse.Token,
                 RefreshToken = authResponse.RefreshToken
             });
