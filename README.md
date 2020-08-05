@@ -1,4 +1,4 @@
-# PlayersEvaluator
+# PlayersEvaluationApp
 
 The main purpose of this app is to help with tracking and evaluating performance of members from your raid group in World of Warcraft. 
 For example: You start the app and register (pretty basic stuff). 
