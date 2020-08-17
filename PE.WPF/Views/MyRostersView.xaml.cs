@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace PE.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for ShellView.xaml
+    /// Interaction logic for MyRostersView.xaml
     /// </summary>
-    public partial class ShellView : Window
+    public partial class MyRostersView : UserControl
     {
-        public ShellView()
+        public MyRostersView()
         {
             InitializeComponent();
         }

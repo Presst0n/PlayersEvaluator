@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PE.API.Data;
 using PE.API.Dtos;
 using PE.DomainModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PE.API.Repository
@@ -23,7 +20,8 @@ namespace PE.API.Repository
 
         public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken)
         {
-            return _mapper.Map<RefreshToken>(await _context.RefreshTokensDto.AsNoTracking().SingleOrDefaultAsync(x => x.Token == refreshToken));
+            return _mapper.Map<RefreshToken>(await _context.RefreshTokensDto.AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Token == refreshToken));
         }
 
         public async Task<bool> UpdateRefreshTokenAsync(RefreshToken refreshToken)
@@ -47,6 +45,7 @@ namespace PE.API.Repository
         {
             var token = await _context.RefreshTokensDto.SingleOrDefaultAsync(x => x.JwtId == refreshToken.JwtId);
             _context.RefreshTokensDto.Remove(token);
+
             return await _context.SaveChangesAsync() > 0;
         }
     }

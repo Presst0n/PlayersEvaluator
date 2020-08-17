@@ -108,7 +108,7 @@ namespace PE.API.Services
 
             //storedRefreshToken.Used = true;
             //await _identityRepository.UpdateRefreshTokenAsync(storedRefreshToken);
-            await  _identityRepository.DeleteRefreshTokenAsync(storedRefreshToken);
+            await _identityRepository.DeleteRefreshTokenAsync(storedRefreshToken);
 
 
             var user = await _userManager.FindByIdAsync(claimsPrincipal.Claims.Single(x => x.Type == "id").Value);
@@ -185,10 +185,10 @@ namespace PE.API.Services
 
             var claims = new List<Claim>
             {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim("id", user.Id)
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("id", user.Id)
             };
 
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -233,11 +233,9 @@ namespace PE.API.Services
 
             return new AuthenticationResult
             {
-                Success = true,
                 Token = tokenHandler.WriteToken(token),
                 RefreshToken = result,
-                EmailAddress = user.Email,
-                UserName = user.UserName
+                Success = true
             };
         }
     }

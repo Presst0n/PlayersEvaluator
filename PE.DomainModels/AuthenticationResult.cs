@@ -6,8 +6,6 @@ namespace PE.DomainModels
 {
     public class AuthenticationResult
     {
-        public string UserName { get; set; }
-        public string EmailAddress { get; set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }
         public bool Success { get; set; }

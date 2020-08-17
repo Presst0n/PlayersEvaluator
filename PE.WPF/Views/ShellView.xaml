@@ -5,21 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PE.WPF.Views"
         mc:Ignorable="d"
-        Title="ShellView" Height="450" Width="800">
+        Title="ShellView" Height="700" Width="1100">
     <DockPanel>
         <Menu DockPanel.Dock="Top" FontSize="15">
             <MenuItem Header="_File">
-                <MenuItem Name="LoginScreen" Header="_LogIn" />
+                <MenuItem Name="DisplayLoginView" Header="_LogIn" />
+                <MenuItem Name="DisplayRegisterView" Header="_Register" />
+                <MenuItem Name="LogOut" Header="_LogOut" />
             </MenuItem>
             <MenuItem Header="_Tools">
-                
+
             </MenuItem>
             <MenuItem Header="_Help">
 
             </MenuItem>
         </Menu>
         <Grid>
-            <ContentControl x:Name="ActiveItem" Margin="5" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="31*"/>
+            </Grid.ColumnDefinitions>
+            <ContentControl x:Name="ActiveItem" Margin="5,5,5,5" Grid.ColumnSpan="2" />
         </Grid>
     </DockPanel>
 </Window>

@@ -1,10 +1,8 @@
 ﻿using Caliburn.Micro;
-using PE.DataManager.Dto;
-using PE.WPF.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using PE.WPF.Services;
+using PE.WPF.EventModels;
 
 namespace PE.WPF.ViewModels
 {
@@ -12,18 +10,51 @@ namespace PE.WPF.ViewModels
     {
         private string _userName;
         private string _password;
-        private IAPIHelper _apiHelper;
+        private string _errorMessage;
+        private readonly IAuthService _authService;
+        private readonly IEventAggregator _events;
+        private readonly IUserService _userService;
 
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAuthService authService, IEventAggregator events, IUserService userService)
         {
-            _apiHelper = apiHelper;
+            _authService = authService;
+            _events = events;
+            _userService = userService;
+        }
+
+        public bool IsErrorVisible
+        {
+            get
+            {
+                bool output = false;
+                if (ErrorMessage?.Length > 0)
+                {
+                    output = true;
+                }
+
+                return output;
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get
+            {
+                return _errorMessage;
+            }
+            set
+            {
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
         }
 
         public string UserName
         {
             get { return _userName; }
-            set 
-            { 
+            set
+            {
                 _userName = value;
                 NotifyOfPropertyChange(() => UserName);
                 NotifyOfPropertyChange(() => CanLogIn);
@@ -33,11 +64,11 @@ namespace PE.WPF.ViewModels
         public string Password
         {
             get { return _password; }
-            set 
-            { 
+            set
+            {
                 _password = value;
                 NotifyOfPropertyChange(() => Password);
-                NotifyOfPropertyChange(() => CanLogIn); 
+                NotifyOfPropertyChange(() => CanLogIn);
             }
         }
 
@@ -54,19 +85,50 @@ namespace PE.WPF.ViewModels
 
                 return output;
             }
-
         }
 
         public async Task LogIn()
         {
             try
             {
-                var result = await _apiHelper.Authenticate(UserName, Password);
+                ErrorMessage = "";
+                var result = await _authService.AuthenticateAsync(UserName, Password);
+
+                if (result != null)
+                {
+                    await _userService.GetLoggedInUserInfo(result.Token, result.RefreshToken);
+                    await _events.PublishOnUIThreadAsync(new LogOnEvent());
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorMessage = ex.Message;
+                await Task.Delay(new TimeSpan(0, 0, 15)).ContinueWith(o => ErrorMessage = "");
             }
         }
     }
 }
+
+                                                                                            //░░▄███▄███▄
+                                                                                            //░░█████████
+                                                                                            //░░▒▀█████▀░
+                                                                                            //░░▒░░▀█▀
+                                                                                            //░░▒░░█░
+                                                                                            //░░▒░█
+                                                                                            //░░░█
+                                                                                            //░░█░░░░███████
+                                                                                            //░██░░░██▓▓███▓██▒
+                                                                                            //██░░░█▓▓▓▓▓▓▓█▓████
+                                                                                            //██░░██▓▓▓(◐)▓█▓█▓█
+                                                                                            //███▓▓▓█▓▓▓▓▓█▓█▓▓▓▓█
+                                                                                            //▀██▓▓█░██▓▓▓▓██▓▓▓▓▓█
+                                                                                            //░▀██▀░░█▓▓▓▓▓▓▓▓▓▓▓▓▓█
+                                                                                            //░░░░▒░░░█▓▓▓▓▓█▓▓▓▓▓▓█
+                                                                                            //░░░░▒░░░█▓▓▓▓█▓█▓▓▓▓▓█
+                                                                                            //░▒░░▒░░░█▓▓▓█▓▓▓█▓▓▓▓█
+                                                                                            //░▒░░▒░░░█▓▓▓█░░░█▓▓▓█
+                                                                                            //░▒░░▒░░██▓██░░░██▓▓██
+                                                                                            //████████████████████████
+                                                                                            //█▄─▄███─▄▄─█▄─█─▄█▄─▄▄─█
+                                                                                            //██─██▀█─██─██─█─███─▄█▀█
+                                                                                            //▀▄▄▄▄▄▀▄▄▄▄▀▀▄▄▄▀▀▄▄▄▄▄▀

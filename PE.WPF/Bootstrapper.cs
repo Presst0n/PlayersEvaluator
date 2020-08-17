@@ -1,6 +1,10 @@
 ﻿using Caliburn.Micro;
 using PE.DataManager;
+using PE.DataManager.Repository;
 using PE.WPF.Helpers;
+using PE.WPF.Services;
+using PE.WPF.UILibrary.Api;
+using PE.WPF.UILibrary.Models;
 using PE.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -27,7 +31,11 @@ namespace PE.WPF
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
-                .Singleton<IAPIHelper, APIHelper>();
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IAPIHelper, APIHelper>()
+                .PerRequest<IUserRepository, UserRepository>()
+                .PerRequest<IAuthService, AuthService>()
+                .PerRequest<IUserService, UserService>();
 
             ConventionManager.AddElementConvention<PasswordBox>(
                 PasswordBoxHelper.BoundPasswordProperty,
