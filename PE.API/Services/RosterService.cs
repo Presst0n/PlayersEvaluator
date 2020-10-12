@@ -24,7 +24,7 @@ namespace PE.API.Services
         public async Task<bool> CreateRosterAsync(Roster roster)
         {
             await _context.RostersDto.AddAsync(_mapper.Map<RosterDto>(roster));
-            
+
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -46,7 +46,8 @@ namespace PE.API.Services
 
         public async Task<Roster> GetRosterByIdAsync(string rosterId)
         {
-            return _mapper.Map<Roster>(await _context.RostersDto.AsNoTracking().Include(x => x.Raiders).AsNoTracking().SingleOrDefaultAsync(r => r.Id == rosterId));
+            return _mapper.Map<Roster>(await _context.RostersDto.AsNoTracking().Include(x => x.Raiders)
+                .ThenInclude(r => r.Notes).AsNoTracking().SingleOrDefaultAsync(r => r.Id == rosterId));
         }
 
         public async Task<bool> UpdateRosterAsync(Roster rosterToUpdate)

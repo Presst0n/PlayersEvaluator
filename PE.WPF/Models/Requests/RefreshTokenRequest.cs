@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PE.WPF.Models
+namespace PE.WPF.Models.Requests
 {
-    public class AuthenticatedUser
+    public class RefreshTokenRequest
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }

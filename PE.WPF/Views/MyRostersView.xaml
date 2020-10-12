@@ -3,11 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" Background="White" FontSize="18"
+             mc:Ignorable="d" Background="White" FontSize="15"
              d:DesignHeight="650" d:DesignWidth="1100">
-
-    <Grid>
-        <Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical">
+        <!--<Grid>-->
+        <!--<Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -24,24 +24,36 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>-->
 
         <!-- Column 0 -->
-        <WrapPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="67,40,0,5">
-            <TextBlock FontWeight="SemiBold">Rosters</TextBlock>
-        </WrapPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <Button x:Name="RefreshRosters" Padding="3" Grid.Row="0" Grid.Column="0" MinWidth="35" MinHeight="25" 
-                MaxHeight="25" MaxWidth="35" Margin="0,40,0,5" HorizontalAlignment="Right" 
-                Background="LightGray" Height="25" VerticalAlignment="Top">
-            <Image Source="/Resources/refresh2.png" />
-        </Button>
-        
-        <ListBox x:Name="Rosters" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Height="450" Width="200" 
+
+            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Margin="48 45 0 0" HorizontalAlignment="Left">My Rosters</TextBlock>
+            <WrapPanel Grid.Row="0" Grid.Column="1" Margin="0 45 48 0" HorizontalAlignment="Right">
+                <TextBlock FontWeight="SemiBold" Margin="0 2 5 0" VerticalAlignment="Stretch" HorizontalAlignment="Right">Reload rosters</TextBlock>
+                <Button x:Name="RefreshRosters" Padding="3" Margin="0 0 0 0" HorizontalAlignment="Right" 
+                        Background="LightGray" Width="35" Height="25" VerticalAlignment="Stretch">
+                    <Image Source="/Resources/refresh2.png" />
+                </Button>
+            </WrapPanel>
+        </Grid>
+
+
+
+        <!--<ListBox x:Name="Rosters" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Height="450" Width="200" 
                  Margin="60 0 0 0" HorizontalAlignment="Left" SelectedItem="{Binding SelectedRoster}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding RosterName}" />
+                    <TextBlock Text="{Binding Name}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -61,26 +73,6 @@
             </WrapPanel>
         </Border>
 
-        <!--<Border BorderBrush="Gray" BorderThickness="0.6 " Width="630" HorizontalAlignment="Right" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="130 0 0 0">
-            <ItemsControl x:Name="RostersCollection">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding GuildLogo}" Margin="10"/>
-                            <TextBlock Text="{Binding RosterName}" Margin="10" />
-                            <TextBlock Text="{Binding Description}" Margin="10" />
-                            <TextBlock Text="{Binding CreationDate}" Margin="10" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Border>-->
-
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gray" BorderThickness="0.6 0.6 0 0" Width="210"
                 Height="225" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="120 0 0 0">
             <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" Margin="0 0 0 0" 
@@ -95,19 +87,18 @@
             <WrapPanel Margin="55 50 0 0" Orientation="Vertical" Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
                         FallbackValue=Collapsed}">
                 <TextBlock FontWeight="SemiBold">Roster Name:</TextBlock>
-                <TextBlock FontWeight="SemiBold">Creation Date:</TextBlock>
-                <TextBlock FontWeight="SemiBold">Owner:</TextBlock>
+                <TextBlock FontWeight="SemiBold">Created by:</TextBlock>
                 <TextBlock FontWeight="SemiBold">Description:</TextBlock>
             </WrapPanel>
         </Border>
 
         <Border Grid.Row="1" Grid.Column="3" BorderBrush="Gray" BorderThickness="0 0.6 0.6 0" Width="210" 
                 Height="225" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 0 0 0">
-            <WrapPanel HorizontalAlignment="Left" Orientation="Vertical" Margin="0 50 25 0" Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
-                        FallbackValue=Collapsed}">
-                <TextBlock Text="{Binding SelectedRoster.RosterName}"/>
-                <TextBlock Text="{Binding SelectedRoster.CreationDate}"/>
-                <TextBlock Text="PlaceHolder"/>
+            <WrapPanel HorizontalAlignment="Left" Orientation="Vertical" Margin="0 50 25 0" 
+                       Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
+                       FallbackValue=Collapsed}">
+                <TextBlock Text="{Binding SelectedRoster.Name}"/>
+                <TextBlock Text="{Binding SelectedRoster.CreatorName}"/>
                 <TextBlock Text="{Binding SelectedRoster.Description}" TextWrapping="Wrap"/>
             </WrapPanel>
         </Border>
@@ -116,14 +107,15 @@
                 Grid.ColumnSpan="3" Margin="120 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" 
                 Height="30" Width="630">
             <TextBlock FontWeight="SemiBold" Margin="50 5 0 0" Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
-                        FallbackValue=Collapsed}">Raiders:</TextBlock>
+                       FallbackValue=Collapsed}">Raiders:</TextBlock>
         </Border>
 
         <Border Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="1"  BorderBrush="Gray" VerticalAlignment="Top"
                 BorderThickness="0.6 0 0.6 0.6" Width="630" Height="195" HorizontalAlignment="Left" 
                 Margin="120 0 0 0">
-            <ItemsControl x:Name="SelectedRoster" ItemsSource="{Binding SelectedRoster.Raiders}" Width="555" HorizontalAlignment="Left" Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
-                        FallbackValue=Collapsed}">
+            <ItemsControl x:Name="SelectedRoster" ItemsSource="{Binding SelectedRoster.Raiders}" Width="555" 
+                          HorizontalAlignment="Left" Visibility="{Binding IsRosterPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}, 
+                          FallbackValue=Collapsed}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -132,16 +124,64 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" Margin="50 5 -45 0" Padding="0" HorizontalAlignment="Left"/>
+                            <TextBlock Text="{Binding Name}" Margin="50 5 -45 0" Padding="0" 
+                                       HorizontalAlignment="Left"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </Border>
+        </Border>-->
 
+        <DataGrid ItemsSource="{Binding Rosters}" SelectedItem="{Binding SelectedRoster}" AutoGenerateColumns="False" Margin="45 3 45 15" 
+                      CanUserAddRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowBackground="#fff" FontWeight="Bold" Foreground="#525252" 
+                      ScrollViewer.CanContentScroll="True" Height="425" Width="auto" AlternatingRowBackground="#f2f2f2" BorderBrush="#000" BorderThickness="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HeadersVisibility="Column" SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Roster Name" Binding="{Binding Path='Name'}" IsReadOnly="True" Width="auto">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="WrapWithOverflow"/>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Created by" Binding="{Binding Path='CreatorName'}" IsReadOnly="True" Width="auto">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="WrapWithOverflow"/>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Raiders" Binding="{Binding Path='Raiders.Count'}" IsReadOnly="True" Width="auto">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="WrapWithOverflow"/>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Description" Binding="{Binding Path='Description'}" IsReadOnly="True" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="WrapWithOverflow"/>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
-        <Button x:Name="LoadRoster" Grid.Row="5" Grid.Column="3" HorizontalAlignment="Right" Padding="20 5" Margin="0 15 135 0">Load</Button>
-        <Button x:Name="DeleteRoster" Grid.Row="5" Grid.Column="3" HorizontalAlignment="Right" Padding="20 5" Margin="0 15 20 0" >Delete</Button>
-
-    </Grid>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+            <Button x:Name="LoadRoster" HorizontalAlignment="Right" Padding="20 5" 
+                Margin="48 0 15 0">Load</Button>
+            <Button x:Name="DeleteRoster" HorizontalAlignment="Right" Padding="20 5" 
+                Margin="0 0 0 0" >Delete</Button>
+        </StackPanel>
+        <!--</Grid>-->
+    </StackPanel>
 </UserControl>

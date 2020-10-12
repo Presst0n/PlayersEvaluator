@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PE.Contracts.V1.Responses
+namespace PE.WPF.Models
 {
-    public class RaiderNoteResponse
+    public class RaiderNote
     {
-        public string RaiderId { get; set; }
         public string RaiderNoteId { get; set; }
+        public string RaiderId { get; set; }
         public string Message { get; set; }
         public string CreatorId { get; set; }
         public string CreatorName { get; set; }

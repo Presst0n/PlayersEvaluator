@@ -226,7 +226,7 @@ namespace PE.API.Services
                 JwtId = token.Id,
                 UserId = user.Id,
                 CreationDate = DateTime.UtcNow,
-                ExpireDate = DateTime.UtcNow.AddMonths(6)
+                ExpireDate = DateTime.UtcNow.AddMonths(3)
             };
 
             var result = await _identityRepository.AddRefreshTokenAsync(refreshToken);

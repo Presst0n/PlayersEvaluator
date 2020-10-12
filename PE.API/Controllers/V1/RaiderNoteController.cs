@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PE.API.ExtendedModels;
 using PE.API.Extensions;
 using PE.API.Helpers;
 using PE.API.Services;
@@ -24,15 +26,17 @@ namespace PE.API.Controllers.V1
         private readonly IRaiderNoteService _raiderNoteService;
         private readonly IRaiderService _raiderService;
         private readonly IResourceAuthorizationService _resourceAuthorizationService;
+        private readonly UserManager<ExtendedIdentityUser> _userManager;
 
         public RaiderNoteController(IMapper mapper, IUriService uriService, IRaiderNoteService raiderNoteService,
-            IRaiderService raiderService, IResourceAuthorizationService resourceAuthorizationService)
+            IRaiderService raiderService, IResourceAuthorizationService resourceAuthorizationService, UserManager<ExtendedIdentityUser> userManager)
         {
             _mapper = mapper;
             _uriService = uriService;
             _raiderNoteService = raiderNoteService;
             _raiderService = raiderService;
             _resourceAuthorizationService = resourceAuthorizationService;
+            _userManager = userManager;
         }
 
         [HttpGet(ApiRoutes.RaiderNotes.Get)]
@@ -89,7 +93,7 @@ namespace PE.API.Controllers.V1
             var raider = await _raiderService.GetRaiderByIdAsync(raiderNoteRequest.RaiderId);
 
             if (raider is null)
-                return BadRequest("Cannot create note for raider, because it does not exists.");
+                return BadRequest("Cannot create note for raider, because it does not exist.");
 
             var userId = HttpContext.GetUserId();
             var result = await _resourceAuthorizationService.AuthorizeAsync(userId, raider);
@@ -102,6 +106,7 @@ namespace PE.API.Controllers.V1
                 }
             }
 
+            var user = await _userManager.FindByIdAsync(userId);
             var raiderNoteId = Guid.NewGuid().ToString();
 
             var raiderNote = new RaiderNote
@@ -109,7 +114,8 @@ namespace PE.API.Controllers.V1
                 RaiderId = raiderNoteRequest.RaiderId,
                 RaiderNoteId = raiderNoteId,
                 Message = raiderNoteRequest.Message,
-                CreatorId = userId
+                CreatorId = userId,
+                CreatorName = user?.UserName
             };
 
             await _raiderNoteService.CreateRaiderNoteAsync(raiderNote);

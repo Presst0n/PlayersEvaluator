@@ -10,5 +10,17 @@ namespace PE.WPF.UILibrary.Models
         public string Token { get; set; }
         public string RefreshToken { get; set; }
         public DateTime CreationDate { get; set; }
+        public DateTime LastLogIn { get; set; }
+
+        public void LogOffUser()
+        {
+            Token = "";
+            UserId = "";
+            Email = "";
+            RefreshToken = "";
+            UserName = "";
+            CreationDate = DateTime.MinValue;
+            LastLogIn = DateTime.MinValue;
+        }
     }
 }

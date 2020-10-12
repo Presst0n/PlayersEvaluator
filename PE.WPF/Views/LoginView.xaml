@@ -21,8 +21,9 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="24" FontFamily="Segoe UI" 
-                   FontWeight="Normal" FontStyle="Normal" Margin="0 70 0 15">
+        
+        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontFamily="Segoe UI" 
+                   FontWeight="Normal" FontStyle="Normal" Margin="0 100 0 15">
             Log In
         </TextBlock>
 
@@ -34,9 +35,9 @@
 
         <!-- Username row -->
         <TextBlock Grid.Row="2" Grid.Column="1" Margin="0 0 7 10" Padding="0 4">
-            Username:
+            Email Address:
         </TextBlock>
-        <TextBox x:Name="UserName" Grid.Row="2" Grid.Column="2" MinWidth="200" MaxWidth="200" Margin="0 0 0 10" Padding="0 4"/>
+        <TextBox x:Name="EmailAddress" Grid.Row="2" Grid.Column="2" MinWidth="200" MaxWidth="200" Margin="0 0 0 10" Padding="0 4"/>
 
         <!-- Password row -->
         <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 0 7 10" Padding="0 4">

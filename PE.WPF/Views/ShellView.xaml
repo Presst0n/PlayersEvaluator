@@ -4,28 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PE.WPF.Views"
+        xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
         Title="ShellView" Height="700" Width="1100">
     <DockPanel>
-        <Menu DockPanel.Dock="Top" FontSize="15">
+        <Menu DockPanel.Dock="Top" FontSize="13">
             <MenuItem Header="_File">
-                <MenuItem Name="DisplayLoginView" Header="_LogIn" />
+                <!--<MenuItem Name="DisplayLoginView" Header="_LogIn" />-->
                 <MenuItem Name="DisplayRegisterView" Header="_Register" />
-                <MenuItem Name="LogOut" Header="_LogOut" />
+                <MenuItem Name="LogOut" Header="_Log Out" />
+                <MenuItem Name="CloseApplication" Header="_Exit" />
             </MenuItem>
             <MenuItem Header="_Tools">
-
+                <MenuItem Name="LoadMyRosters" Header="_MyRosters" />
             </MenuItem>
             <MenuItem Header="_Help">
 
             </MenuItem>
         </Menu>
         <Grid>
+            <!--<Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="31*"/>
-            </Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>-->
             <ContentControl x:Name="ActiveItem" Margin="5,5,5,5" Grid.ColumnSpan="2" />
+
+            <!--<TabControl x:Name="Items" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="4">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" />
+                            <Button Content="X" cal:Message.Attach="DeactivateItem($dataContext, 'true')" />
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>-->
+
         </Grid>
     </DockPanel>
 </Window>

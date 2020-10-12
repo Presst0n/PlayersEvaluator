@@ -1,11 +1,15 @@
 ﻿using Caliburn.Micro;
+using PE.WPF.EventModels;
 using PE.WPF.Models;
+using PE.WPF.Service.Interfaces;
+using PE.WPF.Services;
 using PE.WPF.UILibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -13,13 +17,22 @@ namespace PE.WPF.ViewModels
 {
     public class MyRostersViewModel : Screen
     {
-        private BindingList<RosterInfo> _rosters;
-        private RosterInfo _selectedRoster;
+        private BindingList<Roster> _rosters;
+        private Roster _selectedRoster;
         private ILoggedInUserModel _loggedInUser;
+        private readonly IRosterService _rosterService;
+        private IAuthService _authService;
+        private IUserService _userService;
+        private IEventAggregator _events;
 
-        public MyRostersViewModel(ILoggedInUserModel loggedInUser)
+        public MyRostersViewModel(ILoggedInUserModel loggedInUser, IRosterService rosterService, IAuthService authService, 
+            IUserService userService, IEventAggregator events)
         {
             _loggedInUser = loggedInUser;
+            _rosterService = rosterService;
+            _authService = authService;
+            _userService = userService;
+            _events = events;
         }
 
         public ILoggedInUserModel LoggedInUser
@@ -29,10 +42,13 @@ namespace PE.WPF.ViewModels
 
         public string LoggedInUserName
         {
-            get { return _loggedInUser.UserName + "!"; }
+            get 
+            { 
+                return _loggedInUser.UserName + "!"; 
+            }
         }
 
-        public BindingList<RosterInfo> Rosters
+        public BindingList<Roster> Rosters
         {
             get
             {
@@ -59,7 +75,7 @@ namespace PE.WPF.ViewModels
             }
         }
 
-        public RosterInfo SelectedRoster
+        public Roster SelectedRoster
         {
             get
             {
@@ -103,65 +119,55 @@ namespace PE.WPF.ViewModels
             }
         }
 
-        protected override void OnViewLoaded(object view)
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            base.OnViewLoaded(view);
-            LoadRosters();
+            await LoadRosters();
+            await base.OnActivateAsync(cancellationToken);
         }
 
         public async Task LoadRoster()
         {
-            // Handle loading roster from api by injecting service here responsible for that.
-        }
+            // Get selected roster and open RosterManagement windows with this roster.
 
+            await _events.PublishOnUIThreadAsync(new RosterEvent(SelectedRoster));
+        }
 
         public async Task DeleteRoster()
         {
             // Handle deleting selected roster from list
         }
 
-        public void RefreshRosters()
+        public async Task RefreshRosters()
         {
-            LoadRosters();
+            await LoadRosters();
         }
 
-        private void LoadRosters()
+        private async Task LoadRosters()
         {
-            var rosters = new List<RosterInfo>();
-
-            for (int i = 0; i < 8; i++)
+            try
             {
-                rosters.Add(new RosterInfo
+                var t = _loggedInUser.LastLogIn.AddMinutes(5);
+
+                if (DateTime.Now >= t)
                 {
-                    RosterId = i + 1,
-                    CreationDate = DateTime.Now.ToShortTimeString(),
-                    RosterName = $"Super gildia {i + 1}",
-                    GuildLogo = "https://logo.placeholder",
-                    Description = "Roster Core grupy gildii Res Publica. Najlepszej polskiej gildii na kazzaku",
-                    Raiders = RandomizeRaiders()
-                });
+                    var result = await _authService.RefreshUserLoginAsync(_loggedInUser.Token, _loggedInUser.RefreshToken);
+                    await _userService.GetLoggedInUserAsync(result.Token, result.RefreshToken);
+                }
+
+                var rosters = await _rosterService.GetRostersAsync();
+
+                rosters.Data.ToList().ForEach(x => x.Raiders.ForEach(y => y.Name += ','));
+                Rosters = new BindingList<Roster>(rosters.Data.ToList());
             }
-
-            Rosters = new BindingList<RosterInfo>(rosters);
-        }
-
-        private List<string> RandomizeRaiders()
-        {
-            var raiders = new List<string>() { "Rupert", "Stach", "Gamer1234", "WaltDruid", "PresstonFury", "Destroyer1337", "Amanti", "RedDog3",
-                "Egon", "TankSpec", "Lolooloxd", "MightyLock", "Trevor", "Ridget", "Elton", "Xantaras", "Wiggin", "Yasmin", "Elrond", "Ugway",
-                "Jaxs", "Trvevolt", "Bolvar", "Beowulf", "Wiklet", "Geralt", "Fingolfin"
-            };
-
-            Random rand = new Random();
-
-            var rngRaiders = new List<string>();
-
-            for (int i = 0; i < 10; i++)
+            catch (Exception ex)
             {
-                rngRaiders.Add(raiders.OrderBy(x => rand.NextDouble()).First());
-            }
+                if (ex.Message == "Unauthorized")
+                {
+                    await _events.PublishOnUIThreadAsync(new LogOnEvent());
+                }
 
-            return rngRaiders.Select(x => x + ',').ToList();
+                // Log exceptions somewhere.
+            }
         }
     }
 }

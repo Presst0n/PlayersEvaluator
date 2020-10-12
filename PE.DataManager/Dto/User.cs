@@ -15,6 +15,7 @@ namespace PE.DataManager.Dto
         public string Name { get; set; }
         public string EmailAddress { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime LastLoginDate { get; set; }
         public string RefreshToken { get; set; }
         public string Token { get; set; }
     }

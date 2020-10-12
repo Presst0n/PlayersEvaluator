@@ -4,9 +4,156 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PE.WPF.Views"
-             mc:Ignorable="d" Background="White" FontSize="18"
+             mc:Ignorable="d" Background="White" FontSize="14"
              d:DesignHeight="700" d:DesignWidth="1200">
-    <Grid>
-            
-    </Grid>
+
+    <!--<TabControl>
+        <TabItem Header="Roster">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="LoadRoster" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left" Padding="12 4" Margin="45 45 0 0">My Rosters</Button>
+                    <DataGrid x:Name="Roster" ItemsSource="{Binding Roster.Raiders}" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="4" Margin="45 15 45 15" 
+                      CanUserAddRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowBackground="#fff" FontWeight="Bold" Foreground="#525252" 
+                      ScrollViewer.CanContentScroll="True" Height="450" MaxHeight="450" AlternatingRowBackground="#f2f2f2" BorderBrush="#000" BorderThickness="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path='Name'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Role" Binding="{Binding Path='Role'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Class" Binding="{Binding Path='Class'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Main Spec" Binding="{Binding Path='MainSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Off Spec" Binding="{Binding Path='OffSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Points" Binding="{Binding Path='Points'}" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Notes">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Name="DisplayRaiderNotes" Content="Show" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Access">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="TEST" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left" Padding="12 4" Margin="45 45 0 0">My Rosters</Button>
+                    <DataGrid x:Name="TEST2" ItemsSource="{Binding Roster.Raiders}" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="4" Margin="45 15 45 15" 
+                      CanUserAddRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowBackground="#fff" FontWeight="Bold" Foreground="#525252" 
+                      ScrollViewer.CanContentScroll="True" Height="450" MaxHeight="450" AlternatingRowBackground="#f2f2f2" BorderBrush="#000" BorderThickness="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path='Name'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Role" Binding="{Binding Path='Role'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Class" Binding="{Binding Path='Class'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Main Spec" Binding="{Binding Path='MainSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Off Spec" Binding="{Binding Path='OffSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Points" Binding="{Binding Path='Points'}" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Notes">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Name="DisplayRaiderNotes" Content="Show" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Edit">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="TEST3" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Left" Padding="12 4" Margin="45 45 0 0">My Rosters</Button>
+                    <DataGrid x:Name="TEST4" ItemsSource="{Binding Roster.Raiders}" AutoGenerateColumns="False" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="2" Grid.RowSpan="4" Margin="45 15 45 15" 
+                      CanUserAddRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowBackground="#fff" FontWeight="Bold" Foreground="#525252" 
+                      ScrollViewer.CanContentScroll="True" Height="450" MaxHeight="450" AlternatingRowBackground="#f2f2f2" BorderBrush="#000" BorderThickness="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path='Name'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Role" Binding="{Binding Path='Role'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Class" Binding="{Binding Path='Class'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Main Spec" Binding="{Binding Path='MainSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Off Spec" Binding="{Binding Path='OffSpecialization'}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Points" Binding="{Binding Path='Points'}" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Notes">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Name="DisplayRaiderNotes" Content="Show" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </StackPanel>
+        </TabItem>
+        
+    </TabControl>-->
+    <TabControl x:Name="Items" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="4" SelectedIndex="0">
+        <TabControl.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding DisplayName}" />
+                    <!--<Button Content="X" cal:Message.Attach="DeactivateItem($dataContext, 'true')" />-->
+                </StackPanel>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+    </TabControl>
+
 </UserControl>

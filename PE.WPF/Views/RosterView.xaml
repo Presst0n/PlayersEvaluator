@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="PE.WPF.Views.RosterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PE.WPF.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" Background="White" FontSize="15"
+             d:DesignHeight="650" d:DesignWidth="1200">
+    <StackPanel Orientation="Vertical">
+        <!--<Grid>-->
+            <!--<Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>-->
+            
+            <DataGrid ItemsSource="{Binding Roster.Raiders}" SelectedItem="{Binding SelectedRaider}" AutoGenerateColumns="False" Margin="45 65 45 15" 
+                      CanUserAddRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowBackground="#fff" FontWeight="Bold" Foreground="#525252" 
+                      ScrollViewer.CanContentScroll="True" Height="450" MaxHeight="450" AlternatingRowBackground="#f2f2f2" BorderBrush="#000" BorderThickness="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Auto" HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Path='Name'}" IsReadOnly="True" Width="200" />
+                <DataGridTextColumn Header="Role" Binding="{Binding Path='Role'}" IsReadOnly="True" Width="50"/>
+                <DataGridTextColumn Header="Class" Binding="{Binding Path='Class'}" IsReadOnly="True" Width="120" />
+                <DataGridTextColumn Header="Main Spec" Binding="{Binding Path='MainSpecialization'}" IsReadOnly="True" Width="120" />
+                <DataGridTextColumn Header="Off Spec" Binding="{Binding Path='OffSpecialization'}" IsReadOnly="True" Width="120" />
+                <DataGridTextColumn Header="Points" Binding="{Binding Path='Points'}" IsReadOnly="True" />
+                <DataGridTemplateColumn Header="Notes">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="DisplayRaiderNotes" Content="Show" cal:Message.Attach="[Click] = [DisplayRaiderNotes()]"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        <!--</Grid>-->
+    </StackPanel>
+</UserControl>

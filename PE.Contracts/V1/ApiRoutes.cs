@@ -8,7 +8,8 @@
 
         public static class Users
         {
-            public const string Get = Base + "/users/user";
+            public const string Get = Base + "/users/{userId}";
+            public const string GetLoggedIn = Base + "/users/user";
             public const string GetAll = Base + "/users";
         }
 

@@ -25,7 +25,7 @@ namespace PE.API.Controllers.V1
             {
                 return BadRequest(new AuthFailedResponse
                 {
-                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(e => e.ErrorMessage))
+                    CustomErrors = ModelState.Values.SelectMany(x => x.Errors.Select(e => e.ErrorMessage))
                 });
             }
 
@@ -56,7 +56,7 @@ namespace PE.API.Controllers.V1
             {
                 return BadRequest(new AuthFailedResponse
                 {
-                    Errors = authResponse.Errors
+                    CustomErrors = authResponse.Errors
                 });
             }
 

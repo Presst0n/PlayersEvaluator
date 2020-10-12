@@ -6,7 +6,11 @@ namespace PE.WPF.Models
 {
     public class Roster
     {
-        public string RosterId { get; set; }
-        public string RosterName { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string CreatorId { get; set; }
+        public string CreatorName { get; set; }
+        public string Description { get; set; }
+        public List<Raider> Raiders { get; set; }
     }
 }

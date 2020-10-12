@@ -2,13 +2,16 @@
 using PE.DataManager;
 using PE.DataManager.Repository;
 using PE.WPF.Helpers;
+using PE.WPF.Service.Interfaces;
 using PE.WPF.Services;
+using PE.WPF.Services.Interfaces;
 using PE.WPF.UILibrary.Api;
 using PE.WPF.UILibrary.Models;
 using PE.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,17 +38,21 @@ namespace PE.WPF
                 .Singleton<IAPIHelper, APIHelper>()
                 .PerRequest<IUserRepository, UserRepository>()
                 .PerRequest<IAuthService, AuthService>()
-                .PerRequest<IUserService, UserService>();
+                .PerRequest<IUserService, UserService>()
+                .PerRequest<IRosterService, RosterService>()
+                .PerRequest<INoteService, NoteService>()
+                .PerRequest<IMainScreenTabItem, RosterViewModel>()
+                .PerRequest<IMainScreenTabItem, EditRosterViewModel>();
 
             ConventionManager.AddElementConvention<PasswordBox>(
                 PasswordBoxHelper.BoundPasswordProperty,
                 "Password",
                 "PasswordChanged");
 
-
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)
                 .Where(type => type.Name.EndsWith("ViewModel"))
+                .Where(type => type.GetInterface(typeof(IMainScreenTabItem).Name) == null)
                 .ToList()
                 .ForEach(viewModelType => _container
                 .RegisterPerRequest(viewModelType, viewModelType.ToString(), viewModelType));

@@ -1,5 +1,7 @@
 ﻿using Caliburn.Micro;
 using PE.DataManager.Dto;
+using PE.WPF.EventModels;
+using PE.WPF.Service.Interfaces;
 using PE.WPF.Services;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PE.WPF.ViewModels
 {
-    public class RegisterViewModel : Screen
+    public sealed class RegisterViewModel : Screen
     {
         private string _userName;
         private string _email;
@@ -16,11 +18,14 @@ namespace PE.WPF.ViewModels
         private string _errorMessage;
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
+        private readonly IEventAggregator _events;
 
-        public RegisterViewModel(IAuthService authService, IUserService userService)
+        public RegisterViewModel(IAuthService authService, IUserService userService, IEventAggregator events)
         {
+            DisplayName = "Register";
             _authService = authService;
             _userService = userService;
+            _events = events;
         }
 
         public bool IsErrorVisible
@@ -108,7 +113,9 @@ namespace PE.WPF.ViewModels
 
                 if (result != null)
                 {
-                    await _userService.GetLoggedInUserInfo(result.Token, result.RefreshToken);
+                    await _userService.GetLoggedInUserAsync(result.Token, result.RefreshToken);
+                    await _userService.CreateLocalUserAsync();
+                    await _events.PublishOnUIThreadAsync(new LogOnEvent());
                 }
             }
             catch (Exception ex)

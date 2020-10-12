@@ -10,5 +10,6 @@ namespace PE.DomainModels
         public string RaiderId { get; set; }
         public string Message { get; set; }
         public string CreatorId { get; set; }
+        public string CreatorName { get; set; }
     }
 }
