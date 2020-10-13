@@ -21,11 +21,13 @@ namespace PE.WPF.ViewModels
         private string _eNote;
         private ObservableCollection<RaiderNote> _raiderNotes;
         private INoteService _noteService;
+        private IRosterAccessService _accessService;
 
-        public RaiderNoteViewModel(ILoggedInUserModel loggedInUser, INoteService noteService)
+        public RaiderNoteViewModel(ILoggedInUserModel loggedInUser, INoteService noteService, IRosterAccessService accessService)
         {
             _loggedInUser = loggedInUser;
             _noteService = noteService;
+            _accessService = accessService;
         }
 
         public Raider Raider { get; set; }
@@ -63,6 +65,7 @@ namespace PE.WPF.ViewModels
                 NotifyOfPropertyChange(() => SelectedNote);
                 NotifyOfPropertyChange(() => CanShowEditNoteTextBox);
                 NotifyOfPropertyChange(() => ENote);
+                NotifyOfPropertyChange(() => CanDeleteNote);
             }
         }
 
@@ -110,6 +113,21 @@ namespace PE.WPF.ViewModels
             }
         }
 
+        public bool CanDeleteNote
+        {
+            get
+            {
+                bool output = false;
+
+                if (SelectedNote != null)
+                {
+                    output = true;
+                }
+
+                return output;
+            }
+        }
+
         public string ENote
         {
             get
@@ -132,7 +150,7 @@ namespace PE.WPF.ViewModels
 
         }
 
-        public void AddNote()
+        public async void AddNote()
         {
             RaiderNotes.Add(new RaiderNote
             {
@@ -144,11 +162,11 @@ namespace PE.WPF.ViewModels
 
             Raider.Notes = RaiderNotes.ToList();
 
-            var result = _noteService.CreateRaiderNote(Raider.RaiderId, NewNote);
+            var result = await _noteService.CreateRaiderNoteAsync(Raider.RaiderId, NewNote);
             NewNote = "";
         }
 
-        public void EditNote()
+        public async void EditNote()
         {
             if (_loggedInUser.UserName != SelectedNote.CreatorName)
             {
@@ -156,11 +174,31 @@ namespace PE.WPF.ViewModels
             }
 
             SelectedNote.Message = _eNote;
-            var result = _noteService.EditRaiderNote(SelectedNote.RaiderNoteId, SelectedNote.Message);
+            var result = await _noteService.EditRaiderNoteAsync(SelectedNote.RaiderNoteId, SelectedNote.Message);
             SelectedNote = null;
             Raider.Notes = RaiderNotes.ToList();
             RaiderNotes = null;
             RaiderNotes = new ObservableCollection<RaiderNote>(Raider.Notes);
+        }
+
+        public async void DeleteNote()
+        {
+            var output = await _accessService.GetRosterAccessAsync(Raider.RosterId);
+            var u = output.Data.ToList().SingleOrDefault(x => x.UserId == _loggedInUser.UserId);
+
+            if (u is null )
+            {
+                // Display modal window with info, that user has no permissions to delete this resource.
+                return;
+            }
+
+            if (u.IsOwner || u.IsModerator)
+            {
+                await _noteService.DeleteRaiderNoteAsync(SelectedNote.RaiderNoteId);
+
+                RaiderNotes.Remove(SelectedNote);
+                Raider.Notes = RaiderNotes.ToList();
+            }
         }
 
         protected override Task OnActivateAsync(CancellationToken cancellationToken)

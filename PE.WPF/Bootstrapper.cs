@@ -41,6 +41,7 @@ namespace PE.WPF
                 .PerRequest<IUserService, UserService>()
                 .PerRequest<IRosterService, RosterService>()
                 .PerRequest<INoteService, NoteService>()
+                .PerRequest<IRosterAccessService, RosterAccessService>()
                 .PerRequest<IMainScreenTabItem, RosterViewModel>()
                 .PerRequest<IMainScreenTabItem, EditRosterViewModel>();
 

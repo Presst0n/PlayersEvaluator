@@ -53,6 +53,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -197,5 +198,6 @@
 
             <Button x:Name="EditNote" Content="Save" Padding="3" Margin="0 7 0 0" HorizontalAlignment="Right" Width="75"/>
         </StackPanel>
+        <Button x:Name="DeleteNote" Grid.Row="2" Grid.Column="1" Padding="5" Width="75" HorizontalAlignment="Right" Margin="0 8 48 0">Delete</Button>
     </Grid>
 </Window>

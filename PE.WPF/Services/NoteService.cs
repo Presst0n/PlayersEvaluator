@@ -17,7 +17,7 @@ namespace PE.WPF.Services
             _client = apiHelper.ApiClient;
         }
 
-        public async Task<bool> CreateRaiderNote(string raiderId, string message)
+        public async Task<bool> CreateRaiderNoteAsync(string raiderId, string message)
         {
             // TODO - Connect to API and hit Create (raider-note) endpoint.  
 
@@ -36,9 +36,26 @@ namespace PE.WPF.Services
             }
         }
 
-        public async Task<bool> EditRaiderNote(string raiderNoteId, string message)
+        public async Task<bool> EditRaiderNoteAsync(string raiderNoteId, string message)
         {
             using (HttpResponseMessage response = await _client.PutAsJsonAsync($"api/v1/raiderNotes/{raiderNoteId}", new { message }))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+
+                    //throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
+        public async Task<bool> DeleteRaiderNoteAsync(string raiderNoteId)
+        {
+            using (HttpResponseMessage response = await _client.DeleteAsync($"api/v1/raiderNotes/{raiderNoteId}"))
             {
                 if (response.IsSuccessStatusCode)
                 {
